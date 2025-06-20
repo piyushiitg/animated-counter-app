@@ -184,6 +184,14 @@
         oscillator.start();
         setTimeout(() => oscillator.stop(), 100);
       }
+      function speakNumber(num) {
+       const soundOn = document.getElementById('soundToggle').checked;
+       if (!soundOn) return;
+
+        const utterance = new SpeechSynthesisUtterance(num.toString());
+        utterance.rate = 1;
+        speechSynthesis.speak(utterance);
+      }
 
       function startCounters() {
   resetCounters();
@@ -199,7 +207,8 @@
 
     const secondInterval = setInterval(() => {
       document.getElementById("secondCounter").textContent = second;
-      beep();
+      //beep();
+      speakNumber(second);
       second++;
       if (second > 10) {
         clearInterval(secondInterval);
@@ -213,7 +222,8 @@
   function runFirstCounter() {
     if (first > 10) return;
     document.getElementById("firstCounter").textContent = first;
-    beep();
+    speakNumber(second);
+    //beep();
     runSecondCounter(() => {
       first++;
       setTimeout(runFirstCounter, firstSpeed);
@@ -234,6 +244,7 @@
         first = 1;
         second = 1;
         startTime = null;
+        speechSynthesis.cancel();
      }
       document.getElementById('startBtn').onclick = startCounters;
       document.getElementById('resetBtn').onclick = resetCounters;
