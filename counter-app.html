@@ -128,7 +128,7 @@
   </style>
 </head>
 <body>
-  <h1>Advanced Animated Counter App</h1>
+  <h1>Physiotherapy Exercise Tracker</h1>
 
   <div class="counter-container">
     <div class="counter-box">
@@ -222,7 +222,7 @@
   function runFirstCounter() {
     if (first > 10) return;
     document.getElementById("firstCounter").textContent = first;
-    beep();
+    speakNumber(first);
     runSecondCounter(() => {
       first++;
       setTimeout(runFirstCounter, firstSpeed);
