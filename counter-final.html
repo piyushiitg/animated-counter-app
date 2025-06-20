@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Advanced Counter App</title>
+  <style>
+    :root {
+      --bg: #f0f4f8;
+      --text: #222;
+      --box: #fff;
+      --shadow: rgba(0,0,0,0.1);
+    }
+
+    body.dark {
+      --bg: #1a1a1a;
+      --text: #f5f5f5;
+      --box: #2a2a2a;
+      --shadow: rgba(255,255,255,0.05);
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .counter-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .counter-box {
+      background: var(--box);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 10px 20px var(--shadow);
+      text-align: center;
+      width: 160px;
+      transition: transform 0.3s;
+    }
+
+    .counter-box:hover {
+      transform: scale(1.05);
+    }
+
+    .label {
+      font-size: 1rem;
+      color: #888;
+      margin-bottom: 10px;
+    }
+
+    .value {
+      font-size: 2.5rem;
+      font-weight: bold;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    input[type="number"] {
+      width: 60px;
+      padding: 5px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 15px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #4338ca;
+    }
+
+    .toggle {
+      margin-top: 15px;
+    }
+
+    .toggle input {
+      margin-right: 8px;
+    }
+
+    @media (max-width: 600px) {
+      .counter-box {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Physiotherapy Exercise Tracker</h1>
+
+  <div class="counter-container">
+    <div class="counter-box">
+      <div class="label">First Counter</div>
+      <div class="value" id="firstCounter">0</div>
+    </div>
+    <div class="counter-box">
+      <div class="label">Second Counter</div>
+      <div class="value" id="secondCounter">0</div>
+    </div>
+    <div class="counter-box">
+      <div class="label">Time Taken (s)</div>
+      <div class="value" id="timerCounter">0</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="control-group">
+      <label>First Speed (ms)</label>
+      <input type="number" id="firstSpeed" value="500">
+    </div>
+    <div class="control-group">
+      <label>Second Speed (ms)</label>
+      <input type="number" id="secondSpeed" value="300">
+    </div>
+    <div class="control-group">
+      <label>🔊 Sound</label>
+      <input type="checkbox" id="soundToggle">
+    </div>
+    <div class="control-group">
+      <label>🌗 Dark Mode</label>
+      <input type="checkbox" id="darkModeToggle">
+    </div>
+  </div>
+
+  <div class="buttons">
+    <button id="startBtn">Start</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+
+  <script>
+    let firstInterval;
+    let secondInterval;
+
+    window.onload = function () {
+
+      function speakNumber(num) {
+        const soundOn = document.getElementById('soundToggle').checked;
+        if (!soundOn) return;
+        const utterance = new SpeechSynthesisUtterance(num.toString());
+        utterance.rate = 1;
+        speechSynthesis.speak(utterance);
+      }
+
+      function startCounters() {
+        resetCounters();
+
+        let first = 1;
+        let second = 1;
+        const firstSpeed = parseInt(document.getElementById('firstSpeed').value) || 500;
+        const secondSpeed = parseInt(document.getElementById('secondSpeed').value) || 300;
+
+        function runSecondCounter(callback) {
+          second = 1;
+          const startSecond = Date.now();
+
+          secondInterval = setInterval(() => {
+            document.getElementById("secondCounter").textContent = second;
+            speakNumber(second);
+            second++;
+            if (second > 10) {
+              clearInterval(secondInterval);
+              const timeTaken = ((Date.now() - startSecond) / 1000).toFixed(2);
+              document.getElementById("timerCounter").textContent = timeTaken;
+              if (callback) callback();
+            }
+          }, secondSpeed);
+        }
+
+        function runFirstCounter() {
+          if (first > 10) return;
+          document.getElementById("firstCounter").textContent = first;
+          speakNumber(first);
+          runSecondCounter(() => {
+            first++;
+            firstInterval = setTimeout(runFirstCounter, firstSpeed);
+          });
+        }
+
+        runFirstCounter();
+      }
+
+      function resetCounters() {
+        clearInterval(secondInterval);
+        clearTimeout(firstInterval);
+        document.getElementById("firstCounter").textContent = "0";
+        document.getElementById("secondCounter").textContent = "0";
+        document.getElementById("timerCounter").textContent = "0";
+        speechSynthesis.cancel();
+      }
+
+      document.getElementById('startBtn').onclick = startCounters;
+      document.getElementById('resetBtn').onclick = resetCounters;
+
+      document.getElementById('darkModeToggle').addEventListener('change', function () {
+        document.body.classList.toggle('dark', this.checked);
+      });
+    };
+  </script>
+</body>
+</html>
