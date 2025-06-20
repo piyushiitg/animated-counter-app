@@ -128,7 +128,7 @@
   </style>
 </head>
 <body>
-  <h1>Physiotherapy Exercise Tracker</h1>
+  <h1>Advanced Animated Counter App</h1>
 
   <div class="counter-container">
     <div class="counter-box">
@@ -207,7 +207,7 @@
 
     const secondInterval = setInterval(() => {
       document.getElementById("secondCounter").textContent = second;
-      
+      //beep();
       speakNumber(second);
       second++;
       if (second > 10) {
@@ -222,8 +222,7 @@
   function runFirstCounter() {
     if (first > 10) return;
     document.getElementById("firstCounter").textContent = first;
-    speakNumber(first);
-    
+    beep();
     runSecondCounter(() => {
       first++;
       setTimeout(runFirstCounter, firstSpeed);
