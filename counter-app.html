@@ -207,7 +207,7 @@
 
     const secondInterval = setInterval(() => {
       document.getElementById("secondCounter").textContent = second;
-      //beep();
+      
       speakNumber(second);
       second++;
       if (second > 10) {
@@ -222,8 +222,8 @@
   function runFirstCounter() {
     if (first > 10) return;
     document.getElementById("firstCounter").textContent = first;
-    speakNumber(second);
-    //beep();
+    speakNumber(first);
+    
     runSecondCounter(() => {
       first++;
       setTimeout(runFirstCounter, firstSpeed);
